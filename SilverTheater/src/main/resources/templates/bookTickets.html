@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+
+    <Title>Book Tickets</Title>
+    <div class="topnav">
+        <a href="/">
+            <img src="/Images/logo.png" alt="Silver Theatre">
+        </a>
+        <h2>Book Tickets</h2>
+    </div>
+
+</head>
+<body>
+<div class="form-container-bookTickets">
+    <form>
+        <h2>Movie: <span id="MovieName"></span></h2>
+        <h2>At: <span id="LocationName"></span></h2>
+        <h2>Time: <span id="Showtime"></span></h2>
+        <br>
+        <p style="color: white"> ShowID: <span id="ShowID"></span></p>
+        <p style="color: green">Discounted price available for shows before 6 pm and Tuesday's</p><br>
+        <p>Available Seats: <span id="seatAvail"></span></p>
+
+        <label for="tickets" style="font-size: large;">Select number of tickets (8 max)
+            <select name="tickets" id="tickets" class="tickets">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </label>
+        <br><br> <p>Price: $<span id="TicketPrice"></span> per ticket</p>
+        <p id="serviceFee"> Online service fee: $<span id="serviceFeeAmount"></span></p>
+        <p>Total Price: $<span style="color: red" id="TotalPrice"></span></p>
+        <br>
+        <div id="emailField">
+            <label for="email">Email: </label><br>
+            <input type="text" id="email" placeholder="Enter Your Email" name="email" required ><br><br>
+            </div>
+        <button type="button" onclick="bookTicket()">Book Now</button>
+        <br><br>
+    </form>
+</div>
+
+<script>
+    const serviceFeeAmountElement = document.getElementById("serviceFeeAmount");
+    let calculatedServiceFee = 1.50;
+    serviceFeeAmountElement.textContent = calculatedServiceFee.toFixed(2);
+    const ticketsSelect = document.getElementById("tickets");
+    const ticketPriceSpan = document.getElementById("TicketPrice");
+    const totalPriceSpan = document.getElementById("TotalPrice");
+    const showId = document.getElementById("ShowID");
+    let membershipType = '';
+
+    function updateTotalPrice() {
+        const selectedTickets = parseInt(ticketsSelect.value);
+        const pricePerTicket = parseFloat(ticketPriceSpan.textContent);
+
+        calculatedServiceFee = (membershipType === 'PREMIUM') ? 0 : 1.50 * selectedTickets;
+        serviceFeeAmountElement.textContent = calculatedServiceFee.toFixed(2);
+
+        const total = (selectedTickets * pricePerTicket) + calculatedServiceFee;
+        totalPriceSpan.textContent = total.toFixed(2);
+    }
+
+    // Add an event listener to the select element
+    ticketsSelect.addEventListener("change", updateTotalPrice);
+    function onPageLoad() {
+        // Helper function to retrieve a cookie value by name
+        function getCookieValue(cookieName) {
+            const cookies = document.cookie.split('; ');
+            for (const cookie of cookies) {
+                const [name, value] = cookie.split('=');
+                if (name === cookieName) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+        const M_location = getCookieValue('location1');
+        const M_title = getCookieValue('movie1');
+        const S_time = getCookieValue('STime1');
+        const p_price= getCookieValue('price1');
+        const S_seat = getCookieValue('seat1');
+        const Id_show = getCookieValue('showTimeID1');
+
+        console.log(Id_show);
+
+        const location = document.getElementById("LocationName");
+        location.textContent = ` ${M_location}`;
+
+        const movie = document.getElementById("MovieName");
+        movie.textContent = `${M_title}`;
+
+        const show1 = document.getElementById("Showtime");
+        show1.textContent = ` ${S_time}`;
+
+        const p_ticket = document.getElementById("TicketPrice");
+        p_ticket.textContent = `${p_price}`;
+
+        const showId = document.getElementById("ShowID");
+        showId.textContent = `${Id_show}`;
+
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/booking/countByShowtimeId/${Id_show}`, true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                const seats = JSON.parse(xhr.responseText);
+                document.getElementById('seatAvail').textContent = seats;
+            } else {
+                console.error('Error fetching data');
+            }
+        };
+
+        xhr.send();
+    }
+
+    function bookTicket() {
+        // Check if a user is logged in
+        getCurrentUser()
+            .then(user => {
+                if (user) {
+                    // User is logged in, so use the appUserID
+                    const userEmail = document.getElementById('email').value;
+                    const showTimeID = parseInt(showId.textContent);
+                    const totalPrice = parseFloat(totalPriceSpan.textContent);
+                    const numbTicket = parseInt(ticketsSelect.value);
+                    console.log(userEmail);
+
+                    const formData = {
+                        email: userEmail,
+                        showTimeID: showTimeID,
+                        totalPrice: totalPrice,
+                        numberOfTickets: numbTicket
+                    };
+
+                    // Send the booking data to the appropriate endpoint for members.
+                    fetch('/booking/createBooking', {
+                        method: 'POST',
+                        body: JSON.stringify(formData),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Show the success message
+                                console.log('Booking added successfully.');
+                                alert('Booking added successfully.');
+                                window.location.href = '/summary';
+                            } else {
+                                console.error('Error adding booking.');
+                                alert('Error adding booking.');
+                            }
+                        });
+                } else {
+                    // User is not logged in (non-member), continue with non-member booking.
+                    const email = document.getElementById('email').value;
+                    const showTimeID = parseInt(showId.textContent);
+                    const totalPrice = parseFloat(totalPriceSpan.textContent);
+                    const numbTicket = parseInt(ticketsSelect.value);
+
+                    const formData = {
+                        email: email,
+                        showTimeID: showTimeID,
+                        totalPrice: totalPrice,
+                        numberOfTickets: numbTicket
+                    };
+                    console.log('JSON Data Sent:', formData);
+
+                    // Send the booking data to the appropriate endpoint for non-members.
+                    fetch('/booking/createBooking', {
+                        method: 'POST',
+                        body: JSON.stringify(formData),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Show the success message
+                                console.log('Booking added successfully.');
+                                alert('Booking added successfully.');
+                                window.location.href = '/summary';
+                            } else {
+                                console.error('Error adding booking.');
+                                alert('Error adding booking.');
+                            }
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('Error checking user login status:', error);
+            });
+    }
+
+    async function getCurrentUser() {
+        try {
+            const response = await fetch('/user/details');
+            if (response.ok) {
+                const data = await response.json();
+                membershipType = data.membershipType; // Set the membership type variable
+
+                if (membershipType === "PREMIUM") {
+                    calculatedServiceFee = 0;
+                }
+
+                serviceFeeAmountElement.textContent = calculatedServiceFee.toFixed(2);
+                const userEmail = data.email;
+                const emailu = document.getElementById("email");
+                emailu.value = `${userEmail}`;
+                document.getElementById('emailField').style.display = 'none';
+                // Use the user details returned in the 'data' variable
+                console.log(data);
+            } else {
+                document.getElementById('emailField').style.display = 'block';
+                // This is not a member login
+                throw new Error('Failed to fetch user details');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Attach the onPageLoad function to the window's load event
+    window.addEventListener('load', onPageLoad);
+    getCurrentUser();
+
+</script>
+</body>
+</html>

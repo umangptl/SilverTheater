@@ -1,0 +1,793 @@
+/* CSS Style sheet for the application */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Arial", sans-serif;
+}
+
+body {
+    margin: 0;
+    background-image: url("/Images/background.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.topnav {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background-color: #222E37;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.topnav h2{
+    color: #f1f1f1;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.topnav a img{
+    width:50px;
+    height:50px;
+    border-radius: 50%;
+    margin: 5px 40px 2px 30px;
+}
+
+.topnav input[type=text] {
+    padding: 5px 10px;
+    width: 400px;
+    border: none;
+    font-size: 15px;
+    font-family: inherit;
+    border: black;
+    background-color: whitesmoke;
+    border-radius: 4px;
+    margin: 12px 20px 12px 0;
+}
+
+.dropdown {
+    overflow: hidden;
+    margin-left: 60px;
+}
+
+.dropdown .dropbtn {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 5px 5px;
+    margin-left: 60px;
+    background-color: inherit;
+    font-family: inherit;
+    width: 200px;
+}
+
+.dropbtn:hover, .dropdown:focus {
+    background-color: floralwhite;
+    color: black;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    margin-left: 60px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+.topnav .dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.show {
+    display: block;
+}
+
+.button {
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0px;
+    cursor: pointer;
+    border-radius: 16px;
+    width: 80px;
+}
+
+.button:hover {
+    background-color: #cc9c00;
+}
+
+.topnav .menuButton {
+    background-color: inherit;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    display: inline-block;
+    margin: 8px 30px 8px 100px;
+    cursor: pointer;
+    border-radius: 16px;
+
+}
+
+.topnav a img:hover, .menuButton:hover {
+    color: grey;
+
+}
+
+.menunav {
+    height: 70%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 60px;
+    right: 0px;
+    background-color: #222E37; /* white*/
+    border-radius: 10px;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 40px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* The navigation menu links */
+.menunav a {
+    background-color: inherit;
+    margin-bottom: 20px;
+    text-decoration: none;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    color: white;
+    display: block;
+    transition: 0.3s;
+
+}
+
+.menunav .menuLinkButton {
+    background-color: white;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    width: 240px;
+    height: 40px;
+    font-size: 15px;
+    align-self: center;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.menunav input[type="submit"] {
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    margin-top: 60px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 80px;
+    border-radius: 16px;
+    padding: 10px 20px;
+}
+/* When you mouse over the navigation links, change their color */
+.menunav a:hover , .menuLinkButton:hover, input[type="submit"]:hover{
+    color: grey;
+}
+
+/* Position and style the close button (top right corner) */
+.menunav .closeButton {
+    position: absolute;
+    top: 1px;
+    right: 10px;
+    font-size: 36px;
+    margin-right: 10px;
+}
+
+.menunav .backButton {
+    position: absolute;
+    top: 1px;
+    left: 10px;
+    font-size: 36px;
+    margin-left: 10px;
+}
+/* scroll movie/shows */
+.scroll-panel {
+    background-color: #f1f1f1;
+    overflow: auto;
+    padding: 20px;
+    position: relative;
+}
+
+.scroll-panel h1 {
+    text-align: center;
+}
+
+.scroll-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.scroll-indicator.left {
+    left: 0;
+}
+
+.scroll-indicator.right {
+    right: 0;
+}
+
+.show {
+    width: 200px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.show img {
+    width: 200px;
+    height: Auto;
+    object-fit: cover;
+}
+
+.show h2 {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #222E37;
+}
+
+.show p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.show button{
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: inherit;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+}
+
+/* admin Management page */
+
+.movie-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.movie {
+    width: 300px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.movie img {
+    width: 185px;
+    height: Auto;
+    object-fit: cover;
+}
+
+.movie h2 {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #222E37;
+}
+
+.movie p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #000000;
+}
+
+.mid-align-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#movieForm {
+    width: 340px;
+    padding: 2rem 0 1rem 0;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+}
+
+#movieForm input{
+    width: 85%;
+    outline: none;
+    border: none;
+    background: #dfe9f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+/* admin page */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    max-width: calc(100% - 40px);
+    margin: 0 auto;
+}
+
+.form-container {
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    margin: 10px;
+    text-align: center;
+    max-width: 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-container h1 {
+    font-size: 24px;
+    margin: 0 0 20px;
+}
+
+/* book ticket */
+
+.form-container-bookTickets{
+    width: 500px;
+    padding: 2rem 0 1rem 0;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.form-container-bookTickets h4 {
+    font-size: 24px;
+    margin: 20px 0px 20px;
+    text-align: center;
+}
+
+.form-container-bookTickets ul li {
+    font-size: 15px;
+    margin: 10px 0px 0px 100px;
+    text-align: justify;
+}
+
+
+.form-container-bookTickets button {
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 16px;
+    font-size: large;
+}
+
+.form-container-bookTickets input{
+    width: 65%;
+    outline: none;
+    border: none;
+    background: #dfe9f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.form-container-bookTickets div p {
+    font-size: medium;
+}
+
+.form-container-movieDetail{
+    width: 600px;
+    padding: 2rem 0 1rem 0;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.form-container-movieDetail button {
+    align-self: center;
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 16px;
+    font-size: 15px;
+    margin: 10px;
+}
+
+.form-container-movieDetail div p {
+    font-size: large;
+}
+
+.recent-bookings-container {
+    width: 90%;
+    height: 600px;
+    padding: 2rem 0 1rem 0;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.recent-bookings-container .collapsible {
+    background-color: #222E37;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 90%;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.recent-bookings-container .active, .collapsible:hover {
+    background-color: #555;
+}
+
+.recent-bookings-container .collapsible:after {
+    content: '\002B';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.recent-bookings-container .active:after {
+    content: "\2212";
+}
+
+.recent-bookings-container .content {
+    text-align: center;
+    width: 90%;
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f1f1f1;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.recent-bookings-container .content img {
+    height: 250px;
+    width: 200px;
+    border: 1px solid black;
+    float:left;
+    margin: 40px 20px 40px 200px;
+}
+
+.recent-bookings-container .content h4 {
+    text-align: center;
+    margin: 5px 5px 5px 5px;
+}
+.recent-bookings-container .content h2 {
+    text-align: center;
+    margin: 60px 5px 5px;
+}
+
+.recent-bookings-container .content h3 {
+    text-align: center;
+    margin: 5px 5px 40px;
+}
+
+.recent-bookings-container .content button {
+    float: right;
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 16px;
+    font-size: 15px;
+    margin: 0px 170px 20px 20px;
+}
+
+.recent-bookings-container .content button:hover {
+    color: #555555;
+}
+
+/* Login and Register Pages */
+.login_wrapper{
+    width: 340px;
+    padding: 2rem 0 1rem 0;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    opacity: 0.8;
+}
+
+
+.login_wrapper h1{
+    font-size: 2.5rem;
+    color: #07001f;
+    font-family: "Times New Roman",sans-serif;
+    font-stretch: normal;
+}
+
+.login_wrapper p{
+    margin-bottom: 1.7rem;
+}
+
+.login_wrapper form input[type="text"]{
+    width: 85%;
+    outline: none;
+    border: none;
+    background: #dfe9f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.login_wrapper form input[type="password"]{
+    width: 85%;
+    outline: none;
+    border: none;
+    background: #dfe9f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.login_wrapper input[type="submit"] {
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    margin-top: 30px;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 16px;
+    padding: 10px 20px;
+}
+
+.login_wrapper input[type="submit"]:hover {
+    color: grey;
+}
+
+.login_wrapper button{
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    font-size: 15px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 16px;
+    width: 120px;
+    height: 40px;
+}
+.login_wrapper button:hover{
+    /*background: rgba(118, 94, 7, 0.8);*/
+    color: grey;
+}
+.login_wrapper .not-member{
+    font-size: 0.8rem;
+    margin-top: 1.4rem;
+}
+.login_wrapper .not-member a{
+    color: tomato;
+    text-decoration: none;
+}
+.login_wrapper a:hover{
+    text-decoration: underline;
+}
+
+.login_wrapper .error-message {
+    color: red; /* Example: Set text color to red */
+    font-weight: bold; /* Example: Make the text bold */
+    /* Add more styles as needed */
+}
+
+.login_wrapper .logout-message {
+    color: green; /* Example: Set text color to green */
+    font-style: italic; /* Example: Make the text italic */
+    /* Add more styles as needed */
+}
+
+/* Admin Management */
+
+.mbutton {
+    background-color: lightgrey;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    width: 200px;
+    height: 40px;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 10px;
+    border-color: #000000;
+}
+
+.mbutton:hover {
+    background-color: yellow;
+    color: white;
+}
+
+/* Style for the filter container */
+.filter-container {
+    margin: 10px 0;
+}
+
+/* Style for the table */
+#bookingTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#bookingTable th, #bookingTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#bookingTable th {
+    background-color: #f2f2f2;
+}
+
+#bookingTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Payments Page */
+.payment_wrapper{
+    width: 500px;
+    padding: 2rem 0 1rem 0;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    opacity: 0.8;
+}
+
+
+.payment_wrapper h2{
+    color: #07001f;
+    font-family: "Times New Roman",sans-serif;
+    font-stretch: normal;
+}
+
+.payment_wrapper p{
+    margin-bottom: 1.7rem;
+}
+
+.payment_wrapper form input[type="text"]{
+    width: 85%;
+    outline: none;
+    border: none;
+    background: #dfe9f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.payment_wrapper form input[type="password"]{
+    width: 85%;
+    outline: none;
+    border: none;
+    background: #dfe9f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.payment_wrapper input[type="submit"] {
+    background-color: #ffcd29;
+    border: none;
+    color: black;
+    font-family: "Arial Rounded MT Bold", sans-serif;
+    margin-top: 30px;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 16px;
+    padding: 10px 20px;
+}
+
+.payment_wrapper input[type="submit"]:hover {
+    color: grey;
+}
+
+.login-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    color: #000000;
+    text-align: center;
+    line-height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 5px;
+}
+
+.border-square {
+    width: 230px;
+    height: 150px;
+    border: 4px solid transparent;
+    display: inline-block;
+}
+
+.golden {
+    border-color: goldenrod;
+}
+
+.silver {
+    border-color: silver;
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Add Movie</h2>
+  </div>
+
+</head>
+<body>
+
+<br><br>
+<div class="mid-align-container">
+  <form id="movieForm">
+    <!-- Input fields for Movie attributes -->
+    <label for="title">Movie Name</label><br>
+    <input type="text" id="title" placeholder="Name" name="title" required ><br><br>
+
+    <label for="genre">Movie Genre</label><br>
+    <input type="text" id="genre" placeholder="Genre" name="genre" required><br><br>
+
+    <label for="duration">Movie Duration (minutes)</label><br>
+    <input type="number" id="duration" placeholder="Duration" name="duration" required><br><br>
+
+    <label for="releaseDate">Release Date (YYYY-MM-DD)</label><br>
+    <input type="text" id="releaseDate" placeholder="YYYY-MM-DD" name="releaseDate" required><br><br><br>
+
+    <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="submitForm()">Submit</button>
+
+  </form>
+</div>
+
+<script>
+  function submitForm() {
+    const formData = {
+      title: document.getElementById("title").value,
+      genre: document.getElementById("genre").value,
+      duration: document.getElementById("duration").value,
+      releaseDate: document.getElementById("releaseDate").value
+    };
+
+    fetch("/movies/addMovie", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json" // Set the content type to JSON
+      }
+    })
+            .then(response => {
+              if (response.ok) {
+                // Show the success message
+                console.log("Movie added successfully.");
+                alert("Movie added successfully.");
+              } else {
+                console.error("Error adding movie.");
+                alert("Error adding movie.");
+              }
+            })
+            .catch(error => console.error("Error:", error));
+  }
+
+</script>
+
+</body>
+</html>

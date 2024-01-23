@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Admin Management</h2>
+  </div>
+
+</head>
+<body>
+
+<div class="grid-container">
+  <div class="form-container">
+    <form>
+      <h2>Movie Management</h2><br>
+
+      <button type="button" class="mbutton" onclick="redirectToCreateMovie()">Add Movie</button> <br>
+
+      <button type="button" class="mbutton" onclick="redirectToUpdateMovie()">Update Movie</button> <br>
+
+      <button type="button" class="mbutton" onclick="redirectToDeleteMovie()">Delete Movie</button> <br>
+    </form>
+  </div>
+
+  <div class="form-container">
+    <form>
+      <h1>Multiplex Management</h1>
+
+      <button type="button" class="mbutton" onclick="redirectToCreateMultiplex()">Add Multiplex</button> <br>
+
+      <button type="button" class="mbutton" onclick="redirectToUpdateMultiplex()">Update Multiplex</button> <br>
+
+      <button type="button" class="mbutton" onclick="redirectToDeleteMultiplex()">Delete Multiplex</button> <br>
+    </form>
+  </div>
+
+  <div class="form-container">
+    <form>
+      <h1>Show Management</h1>
+
+      <button type="button" class="mbutton" onclick="redirectToCreateShow()">Add Show</button> <br>
+
+      <button type="button" class="mbutton" onclick="redirectToUpdateShow()">Update Show</button> <br>
+
+      <button type="button" class="mbutton" onclick="redirectToDeleteShow()">Delete Show</button> <br>
+    </form>
+  </div>
+
+  <div class="form-container">
+    <form>
+      <h1>Booking Data</h1>
+
+      <button type="button" class="mbutton" onclick="redirectToBookingData()">View Booking Data</button> <br>
+
+    </form>
+  </div>
+
+  <div class="form-container">
+    <form>
+      <h1>Add Employee Access</h1>
+
+      <button type="button" class="mbutton" onclick="redirectToUpdateRole()">Give Employee Access</button> <br>
+
+    </form>
+  </div>
+
+</div>
+
+<script>
+
+  function redirectToUpdateRole() {
+    window.location.href = 'AdminManagement/updateRole';
+  }
+
+  function redirectToBookingData() {
+    window.location.href = 'AdminManagement/bookingManagement';
+  }
+  function redirectToCreateMovie() {
+    window.location.href = 'AdminManagement/addMovie';
+  }
+
+  function redirectToUpdateMovie() {
+    window.location.href = 'AdminManagement/updateMovie';
+  }
+
+  function redirectToDeleteMovie() {
+    window.location.href = 'AdminManagement/deleteMovie';
+  }
+  function redirectToCreateMultiplex() {
+    window.location.href = 'AdminManagement/addMultiplex';
+  }
+  function redirectToUpdateMultiplex() {
+    window.location.href = 'AdminManagement/updateMultiplex';
+  }
+  function redirectToDeleteMultiplex() {
+    window.location.href = 'AdminManagement/deleteMultiplex';
+  }
+  function redirectToCreateShow() {
+    window.location.href = 'AdminManagement/addShow';
+  }
+  function redirectToUpdateShow() {
+    window.location.href = 'AdminManagement/updateShow';
+  }
+  function redirectToDeleteShow() {
+    window.location.href = 'AdminManagement/deleteShow';
+  }
+
+</script>
+</body>
+</html>

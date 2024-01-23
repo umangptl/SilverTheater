@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+
+<head>
+  <Title>Recent Bookings</Title>
+  <link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+</head>
+
+<body>
+<div class="topnav">
+  <a href="/">
+    <img src="/Images/logo.png" alt="Silver Theatre">
+  </a>
+
+  <h2>Recent Bookings</h2>
+</div>
+
+<div class="recent-bookings-container" id="recentBookingsContainer">
+  <!-- The recent bookings will be added here dynamically -->
+</div>
+
+  <script>
+    let userID = null;
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        }
+      });
+    }
+    function populateRecentBookings(recentBookingsData) {
+      const recentBookingsContainer = document.getElementById("recentBookingsContainer");
+
+      recentBookingsData.forEach((booking, index) => {
+        const button = createCollapsibleButton(`Recent Booking ${index + 1}`);
+        const content = createBookingContent(booking);
+
+        recentBookingsContainer.appendChild(button);
+        recentBookingsContainer.appendChild(content);
+      });
+    }
+
+    function createCollapsibleButton(text) {
+      const button = document.createElement("button");
+      button.className = "collapsible";
+      button.textContent = text;
+
+      button.addEventListener("click", function () {
+        this.classList.toggle("active");
+        const content = this.nextElementSibling;
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        }
+      });
+
+      return button;
+    }
+
+    function createBookingContent(booking) {
+      const content = document.createElement("div");
+      content.className = "content";
+
+      const backdrop = createBackdropImage(booking.showTime.movie.backgroundImg);
+      const movieName = createBookingDetailh2("Movie Name", booking.showTime.movie.title);
+      const venue = createBookingDetailh4("Venue", booking.showTime.multiplex.location);
+      const time = createBookingDetailTh4("Time", new Date(booking.showTime.date).toLocaleString());
+      const tickets = createBookingDetailh3("Tickets",`${booking.numberOfTickets}`);
+      const cancelButton = createCancelButton("Cancel Booking", booking.bookingID);
+
+      content.appendChild(backdrop);
+      content.appendChild(movieName);
+      content.appendChild(venue);
+      content.appendChild(time);
+      content.appendChild(tickets);
+      content.appendChild(cancelButton);
+
+      return content;
+    }
+    function createBackdropImage(imageUrl) {
+      const backdrop = document.createElement('img');
+      backdrop.src = `https://image.tmdb.org/t/p/w500/${imageUrl}`;
+      backdrop.alt = 'Movie Background Image';
+      return backdrop;
+    }
+    function createBookingDetailTh4(label, value) {
+      const detail = document.createElement("h4");
+
+      // Assuming the `value` is a date string (e.g., "2023-12-18T15:15:00.000+00:00")
+      const date = new Date(value);
+      date.setHours(date.getHours() + 8);
+
+      // Create an options object to format the date and time
+      const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true, // Use AM/PM format
+        timeZoneName: 'short', // Display the time zone
+      };
+
+      // Format the date and time using the user's local time zone
+      const formattedTime = new Intl.DateTimeFormat('default', options).format(date);
+
+      detail.textContent = `${label}: ${formattedTime}`;
+      return detail;
+    }
+
+
+    function createBookingDetailh2(label, value) {
+      const detail = document.createElement("h2");
+      detail.textContent = `${label}: ${value}`;
+      return detail;
+    }
+    function createBookingDetailh3(label, value) {
+      const detail = document.createElement("h3");
+      detail.textContent = `${label}: ${value}`;
+      return detail;
+    }
+
+    function createBookingDetailh4(label, value) {
+      const detail = document.createElement("h4");
+      detail.textContent = `${label}: ${value}`;
+      return detail;
+    }
+
+    function createCancelButton(text, bookingID) {
+      const cancelButton = document.createElement("button");
+      cancelButton.textContent = text;
+        cancelButton.addEventListener("click", function () {
+            fetch(`/booking/deleteBooking/${bookingID}`, {
+            method: "DELETE",
+            })
+                    .then((response) => {
+                    if (response.ok) {
+                      alert("Successfully cancelled booking.")
+                      location.reload();
+                        return response.json();
+                    } else {
+                        throw new Error("Failed to cancel booking.");
+                    }
+                    })
+                    .then((data) => {
+                    console.log("Booking cancelled successfully.");
+                    window.location.reload();
+                    })
+        });
+      return cancelButton;
+    }
+
+    function fetchRecentBookings(userID) {
+      fetch(`/booking/getBookingsByAppUserId/${userID}`)
+              .then((response) => {
+                if (response.ok) {
+                  return response.json();
+                } else {
+                  throw new Error('Failed to fetch recent bookings.');
+                }
+              })
+              .then((data) => {
+                populateRecentBookings(data);
+              })
+              .catch((error) => {
+                console.error('Error fetching recent bookings:', error);
+              });
+    }
+
+    function fetchUserDetailsAndUpdateMembership() {
+      fetch('/user/details')
+              .then(response => {
+                if (response.ok) {
+                  return response.json();
+                } else {
+                  throw new Error('Failed to fetch user details');
+                }
+              })
+              .then(data => {
+                userID = data.appUserID;
+                console.log("User ID:", userID);
+                fetchRecentBookings(userID);
+              })
+              .catch(error => {
+                console.error('Error fetching user details:', error);
+              });
+    }
+    window.onload = fetchUserDetailsAndUpdateMembership;
+
+  </script>
+</body>

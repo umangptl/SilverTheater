@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+    <Title>Silver Theatre Home Page</Title>
+
+    <div class="topnav">
+        <a href="/">
+            <img src="/Images/logo.png" alt="Silver Theatre">
+        </a>
+
+        <input type="text" id="searchQuery" placeholder="Search...">
+        <button class="button" onclick="searchAll()" >Search</button>
+
+
+        <div class="dropdown" >
+            <button class="dropbtn" onclick="viewLocation()">Select location
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content" id="locDropdown">
+            <!-- Location elements will be added here dynamically -->
+        </div>
+        </div>
+
+    <button id="loginButton" class="button" style="margin-left: 60px; width:90px;"  onclick="window.location.href = 'login';">Sign-in</button>
+
+    <div id="menuNav" class="menunav">
+        <a href="javascript:void(0)" class="closeButton" onclick="closeMenuNav()">&times;</a>
+        <br>
+        <button id="recentBFMembers" class="menuLinkButton" onclick="window.location.href = '/recentBookings';">Recent Bookings</button>
+        <button id="membershipOption" class="menuLinkButton" onclick="window.location.href = '/membership';">Manage Membership</button>
+        <button id="adminManagementButton" class="menuLinkButton" onclick="window.location.href = '/AdminManagement';">Admin Management</button>
+        <button class="menuLinkButton" onclick="window.location.href = '/register';">Become a Member </button>
+
+        <br>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out"/>
+        </form>
+    </div>
+    <button class="menuButton" onclick="openMenuNav()">
+        <i class="fa fa-bars"></i>
+    </button>
+
+        <div class="login-indicator" id="loginIndicator"></div>
+
+</div>
+</head>
+<body>
+<section id="home">
+<div class="scroll-panel">
+    <h1>Shows at <span id="defaultName">San Jose</span> Silver Theatre</h1>
+    <br><br>
+    <div class="scroll-indicator left">
+        <i class="fa fa-angle-left"></i>
+    </div>
+
+    <div class="movie-container" id="showtimebylocation">
+        <!-- Movie elements will be added here dynamically -->
+    </div>
+
+    <div class="scroll-indicator right">
+        <i class="fa fa-angle-right"></i>
+    </div>
+</div>
+
+
+<div class="scroll-panel">
+    <h1>Movies at Silver Theatre</h1>
+    <br><br>
+    <div class="scroll-indicator left">
+        <i class="fa fa-angle-left"></i>
+    </div>
+
+    <div class="movie-container" id="movieList">
+        <!-- Movie elements will be added here dynamically -->
+    </div>
+
+    <div class="scroll-indicator right">
+        <i class="fa fa-angle-right"></i>
+    </div>
+</div>
+
+<div class="scroll-panel">
+    <h1>Upcoming Movies at Silver Theatre</h1>
+    <br><br>
+    <div class="scroll-indicator left">
+        <i class="fa fa-angle-left"></i>
+    </div>
+
+    <div class="movie-container" id="movieListUpcoming">
+        <!-- Movie elements will be added here dynamically -->
+    </div>
+
+    <div class="scroll-indicator right">
+        <i class="fa fa-angle-right"></i>
+    </div>
+</div>
+    </section>
+
+<script>
+    // Function to toggle the dropdown
+    let locationToggle = "San Jose"
+
+
+    function toggleAdmin(role){
+        var adminButton = document.getElementById('adminManagementButton');
+        if(role === "THEATRE_EMPLOYEE"){
+            adminButton.style.display = 'block'
+        } else {
+            adminButton.style.display = 'none'
+        }
+        var recentBFMembers = document.getElementById('recentBFMembers');
+        if(role === "MEMBER"){
+            recentBFMembers.style.display = 'block'
+            membershipOption.style.display = 'block'
+        } else {
+            recentBFMembers.style.display = 'none'
+            membershipOption.style.display = 'none'
+        }
+    }
+
+    async function getCurrentUser(){
+        try {
+            const response = await fetch(`user/details`); // Make sure the URL is correct
+            if (!response.ok) {
+                document.getElementById("loginButton").style.display = 'block'
+                toggleAdmin("myRole")
+                displayUserInitials(" ? ")
+                throw new Error(`Failed to fetch: ${response.statusText}`);
+            }
+            const user = await response.json();
+            console.log(user.toString())
+
+            // Assuming 'user' is an object with 'username' and 'roles' properties
+            myUserName = user.userName
+            myRole = user.role
+
+            // Set the text to the button
+            displayUserInitials(myUserName)
+            toggleAdmin(myRole)
+            document.getElementById("loginButton").style.display = 'none'
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function displayUserInitials(username) {
+        const initials = username.substring(0, 2).toUpperCase();
+        document.getElementById('loginIndicator').textContent = initials;
+    }
+
+
+    function viewLocation() {
+        document.getElementById("locDropdown").classList.toggle("show");
+    }
+
+    async function searchAll(){
+        await findShowTimesByTitleNdLocation()
+    }
+    function createShowElement(show) {
+        const showElement = document.createElement('div');
+        showElement.classList.add('show');
+
+        const title = document.createElement('h2');
+        title.textContent = show.movie.title;
+
+        const genre = document.createElement('p');
+        genre.textContent = 'Genre: ' + show.movie.genre;
+
+        const duration = document.createElement('p');
+        duration.textContent = 'Duration: ' + show.movie.duration + ' minutes';
+
+        const price = document.createElement('p');
+        price.textContent = 'Price: $' + show.price;
+
+        const backdrop = document.createElement('img');
+        backdrop.src = `https://image.tmdb.org/t/p/w500/${show.movie.backgroundImg}`;
+        backdrop.alt = show.movie.title + ' backgroundImage';
+
+        const bookButton = document.createElement('button');
+        bookButton.textContent = 'Book';
+        bookButton.addEventListener('click', () => {
+            const multiplexName = show.multiplex.location;
+            const movieTitle = show.movie.title;
+            const movieGenre = show.movie.genre;
+            const movieDuration = show.movie.duration;
+            const moviePrice = show.price;
+            const movieBackdrop = show.movie.backgroundImg;
+
+            const expirationDate = new Date();
+            expirationDate.setSeconds(expirationDate.getSeconds() + 150);
+
+            document.cookie = `location=${multiplexName}; expires=${expirationDate.toUTCString()}; path=/;`;
+            document.cookie = `movie=${movieTitle}; expires=${expirationDate.toUTCString()}; path=/;`;
+            document.cookie = `genre=${movieGenre}; expires=${expirationDate.toUTCString()}; path=/;`;
+            document.cookie = `duration=${movieDuration}; expires=${expirationDate.toUTCString()}; path=/;`;
+            document.cookie = `price=${moviePrice}; expires=${expirationDate.toUTCString()}; path=/;`;
+            document.cookie = `backdrop=${movieBackdrop}; expires=${expirationDate.toUTCString()}; path=/;`;
+
+            window.location.href = `/movieDetails`;
+        });
+
+        showElement.appendChild(backdrop);
+        showElement.appendChild(title);
+        showElement.appendChild(genre);
+        showElement.appendChild(duration);
+        showElement.appendChild(price);
+        showElement.appendChild(bookButton);
+
+        return showElement;
+    }
+
+    async function findShowTimesByTitleNdLocation() {
+        try {
+            const title = document.getElementById('searchQuery').value;
+            const location = locationToggle;
+            const response = await fetch(`/showtimes/getShowTimes/${location}/${title}`);
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch shows for ${location} location and title ${title}`);
+            }
+
+            const shows = await response.json();
+            const showtimebytitle = document.getElementById("showtimebylocation");
+            showtimebytitle.innerHTML = ''; // Clear existing content
+
+            if (shows.length > 0) {
+                const firstShow = shows[0];
+                const showElement = createShowElement(firstShow);
+                showtimebytitle.appendChild(showElement);
+            } else {
+                alert(`No Showtimes for ${title}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function fetchAndDisplayShows(location) {
+        try {
+            const response = await fetch(`/showtimes/getShowTimeByMultiplexName/${location}`);
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch shows for ${location} location`);
+            }
+
+            const shows = await response.json();
+            const showtimebylocation = document.getElementById("showtimebylocation");
+            showtimebylocation.innerHTML = ''; // Clear existing content
+
+            shows.forEach((show) => {
+                const showElement = createShowElement(show);
+                showtimebylocation.appendChild(showElement);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(e) {
+        if (!e.target.matches('.dropbtn')) {
+            var myDropdown = document.getElementById("locDropdown");
+            if (myDropdown.classList.contains('show')) {
+                myDropdown.classList.remove('show');
+            }
+        }
+    }
+
+    /* Set the width of the side navigation to 250px and the left margin of the page content to 250px and add a black background color to body */
+    function openMenuNav() {
+        document.getElementById("menuNav").style.width = "250px";
+        // document.getElementById("main").style.marginRight = "250px";
+        document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+    }
+
+    /* Set the width of the side navigation to 0 and the left margin of the page content to 0, and the background color of body to white */
+    function closeMenuNav() {
+        document.getElementById("menuNav").style.width = "0";
+        // document.getElementById("main").style.marginRight = "0";
+        document.body.style.backgroundColor = "white";
+    }
+
+    // Function to fetch and display multiplex locations for dropdown
+    async function fetchAndDisplayLocations() {
+        try {
+            const response = await fetch("multiplex/getAllMultiplexLocations");
+            if (!response.ok) {
+                throw new Error("Failed to fetch multiplex locations");
+            }
+            const locations = await response.json();
+            const dropdownContent = document.getElementById("locDropdown");
+
+            // Clear existing content
+            dropdownContent.innerHTML = '';
+
+            // Populate the dropdown with locations
+            locations.forEach((location) => {
+                const locationLink = document.createElement('a');
+                locationLink.href = '#';
+                locationLink.textContent = location;
+                // Add a click event listener to update the default name
+                locationLink.addEventListener('click', () => {
+                    document.getElementById("defaultName").textContent = location;
+                    locationToggle = location
+                    fetchAndDisplayShows(location);
+                });
+                dropdownContent.appendChild(locationLink);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Function to fetch and display movies for upcoming movies and latest movies
+    async function fetchAndDisplayMovies(endpoint, listId) {
+        try {
+            const response = await fetch(`/movies/${endpoint}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${endpoint} movies`);
+            }
+            const movies = await response.json();
+            const movieList = document.getElementById(listId);
+
+            movies.forEach((movie) => {
+                const movieItem = document.createElement('div');
+                movieItem.classList.add('movie');
+                // Create movie item content
+                const title = document.createElement('h2');
+                title.textContent = movie.title;
+
+                const genre = document.createElement('p');
+                genre.textContent = 'Genre: ' + movie.genre;
+
+                const duration = document.createElement('p');
+                duration.textContent = 'Duration: ' + movie.duration + ' minutes';
+
+                const releaseDate = document.createElement('p');
+                releaseDate.textContent = 'Release: ' + movie.releaseDate;
+
+                const backdrop = document.createElement('img');
+                backdrop.src = `https://image.tmdb.org/t/p/w500/${movie.backgroundImg}`;
+                backdrop.alt = movie.title + ' backgroundImage';
+
+                // Append elements to movieItem
+                movieItem.appendChild(backdrop);
+                movieItem.appendChild(title);
+                movieItem.appendChild(genre);
+                movieItem.appendChild(duration);
+                movieItem.appendChild(releaseDate);
+
+                movieList.appendChild(movieItem);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Call the function to display latest movies when the page loads
+    window.addEventListener('load', () => {
+        getCurrentUser();
+        fetchAndDisplayMovies('latestMovie', 'movieList');
+        fetchAndDisplayMovies('upcomingMovies', 'movieListUpcoming');
+        fetchAndDisplayShows(locationToggle);
+        fetchAndDisplayLocations();
+    });
+
+</script>
+</body>
+</html>

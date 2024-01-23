@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Delete Movie</h2>
+  </div>
+
+</head>
+<body>
+
+<br><br>
+<form id="movieForm">
+  <label for="movieToDelete">Select Movie to Delete</label>
+  <select id="movieToDelete">
+    <!-- Movie titles will be populated here dynamically -->
+  </select>
+  <br><br>
+  <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="deleteMovie()">Delete</button>
+  <br><br>
+</form>
+
+<script>
+  function deleteMovie() {
+    const select = document.getElementById('movieToDelete');
+    const selectedTitle = select.value;
+    const confirmation = confirm(`Are you sure you want to delete the movie "${selectedTitle}"?`);
+
+    if (confirmation) {
+      fetch(`/movies/deleteMovie/${selectedTitle}`, {
+        method: 'DELETE'
+      })
+              .then(response => {
+                if (response.status === 204) {
+                  console.log('Movie deleted successfully.');
+                  alert('Movie deleted successfully.');
+                  // Refresh the page or update the dropdown after deletion
+                  // You can add the logic here to refresh the dropdown or page
+                } else if (response.status === 404) {
+                  console.error('Movie not found.');
+                  alert('Movie not found.');
+                } else {
+                  console.error('Error deleting movie.');
+                  alert('Error deleting movie.');
+                }
+              })
+              .catch(error => console.error('Error:', error));
+    }
+  }
+
+  // Function to populate the dropdown with movie titles
+  function populateMovieTitles() {
+    fetch('/movies/ViewMovies')
+            .then(response => response.json())
+            .then(data => {
+              const select = document.getElementById('movieToDelete');
+              // Iterate through the list of movies and add each title to the dropdown
+              data.forEach(movie => {
+                const option = document.createElement('option');
+                option.value = movie.title;
+                option.textContent = movie.title;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  // Call the function to populate movie titles when the page loads
+  window.addEventListener('load', populateMovieTitles);
+</script>
+</body>
+</html>

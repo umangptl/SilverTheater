@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/Images/logo.png" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+    <Title>Membership</Title>
+</head>
+<body>
+<div class="topnav">
+    <a href="/">
+        <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+
+    <h2>Membership</h2>
+</div>
+<div class="form-container-bookTickets">
+    <form>
+        <h4>MemberShip Benefits</h4>
+        <h3>Membership Pass<span style="color: #ffcd29" id="membershipType">Login-In to see</span></h3><br>
+        <h3>Total Reward Points <span style="color: green" id="rewardPoints">Login-In to see</span></h3><br>
+        <div class="border-square silver">
+            <h4>Freemium</h4>
+                <p>- No discounts</p>
+                <p>- Service Fee 1.50/booking</p>
+                <p>- Price free $0</p>
+        </div>
+        <div class="border-square golden">
+            <h4>Premium</h4>
+                <p>- Service Fee Waved off</p>
+                <p>- Additional Discounts </p>
+                <p>- Price $15/year</p>
+        </div>
+        <br><br>
+        <label for="membership"; style="font-size: medium;">Select Membership Type
+            <select name="membership" id="membership" class="membership">
+                <option value="REGULAR">Regular (Free)</option>
+                <option value="PREMIUM">Premium ($15/year)</option>
+            </select>
+        </label>
+        <br><br>
+        <button onclick="updatemembership()">Confirm</button>
+        <br><br>
+    </form>
+</div>
+<script>
+
+    let userName = null;
+    let membershipType = null;
+    let rewardPoints = null;
+    function updatemembership(){
+        const selectedMembership = document.getElementById("membership").value;
+
+        fetch(`/updateAppUserMembership/${userName}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: selectedMembership,
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return  response.json();
+                } else {
+                    throw new Error("Failed to update membership.");
+                }
+            })
+            .then((data) => {
+                // Handle the successful response, if needed
+                console.log("Membership updated:", data);
+            })
+            .catch((error) => {
+                // Handle errors, if any
+                console.error("Error updating membership:", error);
+                alert("Error updating membership.");
+            });
+        alert("Membership updated successfully")
+    }
+
+        function fetchUserDetailsAndUpdateMembership() {
+            fetch('/user/details')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Failed to fetch user details');
+                    }
+                })
+                .then(data => {
+                    userName = data.userName;
+                    membershipType = data.membershipType;
+                    rewardPoints = data.rewardsPoints;
+                    document.getElementById("membershipType").textContent = membershipType;
+                    document.getElementById("rewardPoints").textContent = rewardPoints;
+                     })
+                .catch(error => {
+                    console.error('Error fetching user details:', error);
+                });
+        }
+        window.onload = fetchUserDetailsAndUpdateMembership;
+
+</script>
+
+</body>
+</html>
+

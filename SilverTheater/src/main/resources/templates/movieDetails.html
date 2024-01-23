@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+    <Title>Book Tickets</Title>
+
+    <div class="topnav">
+        <a href="/">
+            <img src="/Images/logo.png" alt="Silver Theatre">
+        </a>
+        <h2>Booking Details</h2>
+    </div>
+
+</head>
+<body>
+
+<div class="form-container-movieDetail">
+        <h2>At <span id="LocatioName"></span></h2>
+        <img style="height: 250px; width: 200px; border: 1px solid black;" id="movieImage" alt="movie poster">
+        <h2 id="MovieName"></h2>
+        <p>Duration: <span id="movieDuration"></span> mins</p>
+        <p>Genre: <span id="movieGenre"></span></p>
+        <p>Price:$ <span id="moviePrice"></span></p>
+
+        <div id="showtimeButtons"> <!-- dynamic button creation --> </div>
+        <br/><br/>
+</div>
+<script>
+    // Function to fetch showtimes and create buttons
+
+    function fetchShowTimes(selectedLocation, selectedMovie) {
+        fetch(`/showtimes/getShowTimes/${selectedLocation}/${selectedMovie}`)
+            .then(response => response.json())
+            .then(data => {
+                const showtimeButtons = document.getElementById("showtimeButtons");
+
+                const dateMap = new Map(); // Map to group data by date
+
+                data.forEach(show => {
+                    const dateTime = new Date(show.date);
+                    const utcOffset = 8; // Pacific Time (PT) UTC offset, change to -8 during Pacific Standard Time
+                    const localTime = new Date(dateTime.getTime() + (utcOffset * 60 * 60 * 1000)); // Adjust for UTC offset
+                    const formattedDate = localTime.toLocaleDateString("en-US", { month: 'short', day: 'numeric' });
+                    const timeValue = localTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' });
+
+                    if (!dateMap.has(formattedDate)) {
+                        dateMap.set(formattedDate, []);
+                    }
+
+                    dateMap.get(formattedDate).push({ timeValue, show });
+                });
+
+                dateMap.forEach((showtimes, date) => {
+                    const dateParagraph = document.createElement("h2");
+                    dateParagraph.textContent = date;
+                    showtimeButtons.appendChild(dateParagraph);
+
+                    showtimes.forEach(({ timeValue, show }) => {
+                        const timeButton = document.createElement("button");
+                        timeButton.textContent = timeValue;
+
+                        // Store relevant data in data attributes
+                        timeButton.dataset.multiplex = show.multiplex.location;
+                        timeButton.dataset.movie = show.movie.title;
+                        timeButton.dataset.STime = `${date} at ${timeValue}`;
+                        timeButton.dataset.price = show.price;
+                        timeButton.dataset.seat = show.numbSet;
+                        timeButton.dataset.showTimeID = show.showTimeID;
+
+                        timeButton.addEventListener("click", handleButtonClick);
+                        showtimeButtons.appendChild(timeButton);
+                    });
+                });
+            });
+    }
+
+    function handleButtonClick(event) {
+        const button = event.target;
+
+        const multiplex = button.dataset.multiplex;
+        const movie = button.dataset.movie;
+        const STime = button.dataset.STime;
+        const price = button.dataset.price;
+        const seat = button.dataset.seat;
+        const showTimeID = button.dataset.showTimeID;
+
+
+        const expirationDate = new Date();
+        expirationDate.setSeconds(expirationDate.getSeconds() + 150);
+
+        document.cookie = `location1=${multiplex}; expires=${expirationDate.toUTCString()}; path=/;`;
+        document.cookie = `movie1=${movie}; expires=${expirationDate.toUTCString()}; path=/;`;
+        document.cookie = `STime1=${STime}; expires=${expirationDate.toUTCString()}; path=/;`;
+        document.cookie = `price1=${price}; expires=${expirationDate.toUTCString()}; path=/;`;
+        document.cookie = `seat1=${seat}; expires=${expirationDate.toUTCString()}; path=/;`;
+        document.cookie = `showTimeID1=${showTimeID}; expires=${expirationDate.toUTCString()}; path=/;`;
+
+        window.location.href = "/movieDetails/bookTickets";
+    }
+
+
+    // Function to run on page load
+    function onPageLoad() {
+        // Helper function to retrieve a cookie value by name
+        function getCookieValue(cookieName) {
+            const cookies = document.cookie.split('; ');
+            for (const cookie of cookies) {
+                const [name, value] = cookie.split('=');
+                if (name === cookieName) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+        const selectedLocation = getCookieValue('location');
+        const selectedMovie = getCookieValue('movie');
+        const selectedGenre = getCookieValue('genre');
+        const selectedDuration = getCookieValue('duration');
+        const selectedPrice = getCookieValue('price');
+        const selectedbackdrop = getCookieValue('backdrop');
+
+        const movie = document.getElementById("MovieName");
+        movie.textContent = `${selectedMovie}`;
+
+        const location = document.getElementById("LocatioName");
+        location.textContent = ` ${selectedLocation}`;
+
+        const genre = document.getElementById("movieGenre");
+        genre.textContent = ` ${selectedGenre}`;
+
+        const duration = document.getElementById("movieDuration");
+        duration.textContent = ` ${selectedDuration} `;
+
+        const price = document.getElementById("moviePrice");
+        price.textContent = ` ${selectedPrice}`;
+
+        const backdrop = document.getElementById("movieImage");
+        backdrop.src = `https://image.tmdb.org/t/p/w500/${selectedbackdrop}`;
+
+        // Call the fetchShowTimes function
+        fetchShowTimes(selectedLocation, selectedMovie);
+    }
+
+    // Attach the onPageLoad function to the window's load event
+    window.addEventListener('load', onPageLoad);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+
+<head>
+  <link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+  <Title>
+    Silver Theatre Home Page
+  </Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Add Multiplex</h2>
+  </div>
+
+</head>
+<body>
+<br>
+<div class="mid-align-container">
+  <form id="movieForm">
+    <!-- Input fields for Movie attributes -->
+    <label for="name">Screen Name</label><br>
+    <input type="text" id="name" name="name" placeholder="E.g Screen 1, Screen 2" required><br><br>
+
+    <label for="location">Screen Location</label>
+    <input type="text" id="location" name="location" placeholder="E.g. San Jose, New York" required><br><br><br>
+
+    <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="submitForm()">Submit</button>
+
+  </form>
+</div>
+<script>
+  function submitForm() {
+    const formData = {
+      name: document.getElementById("name").value,
+      location: document.getElementById("location").value,
+    };
+
+    fetch("/multiplex/addMultiplex", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+            .then(response => {
+              if (response.ok) {
+                // Show the success message
+                console.log("Multiplex added successfully.");
+                alert("Multiplex added successfully.");
+              } else {
+                console.error("Error adding Multiplex.");
+                alert("Error adding Multiplex.");
+              }
+            });
+  }
+</script>
+
+</body>
+</html>

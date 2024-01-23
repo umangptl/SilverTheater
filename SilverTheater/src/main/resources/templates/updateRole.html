@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Give access to Employee</h2>
+  </div>
+
+</head>
+<body>
+
+<br><br>
+<div class="mid-align-container">
+  <form id="movieForm">
+    <label for="username">Username</label><br>
+    <input type="text" id="username" placeholder="Username" name="username" required><br><br>
+
+    <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="submitForm()">Submit</button>
+  </form>
+</div>
+
+<script>
+  function submitForm() {
+    // Get the username from the form
+    const username = document.getElementById("username").value;
+
+    // Define the endpoint URL with the username
+    const endpoint = `/updateAppUser/${username}`;
+
+    // Send a PUT request to the server
+    fetch(endpoint, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+            .then(response => {
+              if (response.status === 200) {
+                alert('User role updated successfully');
+              } else {
+                alert('Error updating user role');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+  }
+
+</script>
+
+</body>
+</html>

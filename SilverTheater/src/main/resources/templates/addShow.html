@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Add Show</h2>
+  </div>
+
+</head>
+<body>
+
+<br><br>
+<div class="mid-align-container">
+  <form id="movieForm">
+    <label for="movieDropdown">Select Movie &nbsp;</label>
+    <select id="movieDropdown" required>
+      <option value="">Select Movie</option>
+    </select>
+    <br><br>
+
+    <label for="multiplexDropdown">Select Multiplex&nbsp;</label>
+    <select id="multiplexDropdown" required>
+      <option value="">Select Multiplex</option>
+    </select>
+    <br><br><br>
+
+    <label for="numbSeats">Number of Seats</label><br>
+    <input type="number" id="numbSeats" name="numbSeats" placeholder="Total Seats Available" ><br><br>
+
+    <label for="date">Date</label><br>
+    <input type="date" id="date" name="date" required oninput="calculateDiscount()"><br><br>
+
+    <label for="time">Time</label><br>
+    <input type="time" id="time" name="time" required oninput="calculateDiscount()"><br><br>
+
+    <label for="price">Price ($)</label><br>
+    <input type="number" id="price" name="price" placeholder="Price" required oninput="calculateDiscount()"><br><br>
+
+    <div id="discount" style="display: none;">
+      <label for="discountPercentage">Tuesday before 6pm Discount (%):</label><br>
+      <input type="number" id="discountPercentage" required oninput="calculateDiscount()"><br><br>
+
+      <label for="discountedPrice">Discounted Price: (Auto calculated)</label><br>
+      <input type="text" id="discountedPrice" readonly><br><br>
+    </div><br>
+
+    <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="submitForm()">Submit</button>
+    <br><br>
+  </form>
+</div>
+
+<script>
+
+  function calculateDiscount() {
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
+    const priceInput = document.getElementById("price");
+    const discountInput = document.getElementById("discount");
+    const discountPercentageInput = document.getElementById("discountPercentage");
+
+    const selectedDate = new Date(dateInput.value);
+    const selectedTime = new Date("1970-01-01 " + timeInput.value);
+
+    // Check if the selected day is Tuesday and the time is before 6 PM (18:00)
+    if (selectedDate.getDay() === 1 || selectedTime.getHours() < 18) {
+      // Show the discount input and calculate the discounted price
+      discountInput.style.display = "block";
+      const originalPrice = parseFloat(priceInput.value);
+      const discountPercentage = parseFloat(document.getElementById("discountPercentage").value);
+      document.getElementById("discountedPrice").value = originalPrice - (originalPrice * (discountPercentage / 100));
+    } else {
+      // Hide the discount input if it's not Tuesday before 6 PM
+      discountInput.style.display = "none";
+      document.getElementById("discountedPrice").value = "";
+    }
+  }
+
+  function submitForm() {
+    const selectedMovieID = document.getElementById('movieDropdown').value;
+    const selectedMultiplexID = document.getElementById('multiplexDropdown').value;
+    const numbSeats = document.getElementById('numbSeats').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const price = document.getElementById('price').value;
+    const discountPrice = document.getElementById('discountedPrice').value;
+
+    const formData = {
+      movieID: selectedMovieID,
+      multiplexID: selectedMultiplexID,
+      numbSeats: numbSeats,
+      date: date + 'T' + time + ':00', // Combine date and time
+      price: discountPrice || price
+    };
+    console.log('JSON Data Sent:', formData);
+
+
+    fetch("/showtimes/addShowTime", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+            .then(response => {
+              if (response.ok) {
+                // Show the success message
+                console.log("Showtime added successfully.");
+                alert("Showtime added successfully.");
+              } else {
+                console.error("Error adding showtime.");
+                alert("Error adding showtime.");
+              }
+            });
+  }
+
+  // Function to populate the movie dropdown
+  function populateMovieDropdown() {
+    fetch('/movies/ViewMovies')
+            .then(response => response.json())
+            .then(data => {
+              const select = document.getElementById('movieDropdown');
+              select.innerHTML = ''; // Clear existing options
+              // Iterate through the list of movies and add each title to the dropdown
+              data.forEach(movie => {
+                const option = document.createElement('option');
+                option.value = movie.movieID; // Use the movie ID as the value
+                option.textContent = movie.title;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  // Function to populate the multiplex dropdown
+  function populateMultiplexDropdown() {
+    fetch('/multiplex/getAllMultiplex')
+            .then(response => response.json())
+            .then(data => {
+              const select = document.getElementById('multiplexDropdown');
+              select.innerHTML = ''; // Clear existing options
+              // Iterate through the list of multiplexes and add each name and location to the dropdown
+              data.forEach(multiplex => {
+                const option = document.createElement('option');
+                option.value = multiplex.multiplexID; // Use the multiplex ID as the value
+                option.textContent = multiplex.name + ', ' + multiplex.location;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  // Call the functions to populate the dropdowns when the page loads
+  window.addEventListener('load', () => {
+    populateMovieDropdown();
+    populateMultiplexDropdown();
+  });
+
+</script>
+</body>
+</html>

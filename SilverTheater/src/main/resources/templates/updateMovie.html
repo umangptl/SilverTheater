@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Update Movie</h2>
+  </div>
+
+</head>
+<body>
+
+<br><br>
+<form id="movieForm"  onsubmit="updateMovie(); return false;">
+
+  <label for="updateTitle">Select Movie</label>
+  <select id="updateTitle" required>
+    <option value="">Select a Movie</option>
+  </select>
+  <br><br>
+
+  <button type="button" class="button" style="width: 133px;" onclick="getMovieDetails()">Get Movie Details</button>
+  <br><br><br>
+
+  <label for="updateGenre">Update Genre</label>
+  <input type="text" placeholder="Genre" id="updateGenre" required><br><br>
+
+  <label for="updateDuration">Update Duration (minutes)</label>
+  <input type="number" placeholder="Duration" id="updateDuration" required><br><br>
+
+  <label for="updateReleaseDate">Update Release Date</label>
+  <input type="text" placeholder="YYYY-MM-DD " id="updateReleaseDate" required><br><br><br>
+
+  <button type="submit" class="button" style="width: 113px; height: 45px;">Update Movie</button>
+  <br><br>
+</form>
+
+<script>
+  function populateMovieTitles() {
+    fetch('/movies/ViewMovies')
+            .then(response => response.json())
+            .then(data => {
+              const select = document.getElementById('updateTitle');
+              // Iterate through the list of movies and add each title to the dropdown
+              data.forEach(movie => {
+                const option = document.createElement('option');
+                option.value = movie.title;
+                option.textContent = movie.title;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  function getMovieDetails() {
+    const movieTitle = document.getElementById('updateTitle').value;
+    fetch(`/movies/getMovieByTitle${movieTitle}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Response Data:', data); // Log the response data to the console
+              if (data) {
+                document.getElementById('updateGenre').value = data.genre;
+                document.getElementById('updateDuration').value = data.duration;
+                document.getElementById('updateReleaseDate').value = data.releaseDate;
+              } else {
+                alert('Movie not found.');
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  function updateMovie() {
+    const movieTitle = document.getElementById('updateTitle').value;
+    const updatedMovie = {
+      title: movieTitle, // Use the provided title
+      genre: document.getElementById('updateGenre').value,
+      duration: parseInt(document.getElementById('updateDuration').value),
+      releaseDate: document.getElementById('updateReleaseDate').value
+    };
+    fetch(`/movies/updateMovie/${movieTitle}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedMovie)
+    })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Updated Movie:', data);
+              alert('Movie updated successfully.');
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  window.addEventListener('load', populateMovieTitles);
+</script>
+</body>
+</html>

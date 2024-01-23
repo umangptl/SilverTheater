@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+    <Title>Admin Management</Title>
+
+    <div class="topnav">
+        <a href="/">
+            <img src="/Images/logo.png" alt="Silver Theatre">
+        </a>
+        <h2>Delete Show</h2>
+    </div>
+</head>
+<body>
+<br><br>
+
+<form id="movieForm">
+    <label for="ID">ID number</label>
+    <input type="text" id="ID" required><br><br>
+    <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="deleteShowTime()">Delete</button>
+    <br><br>
+</form>
+
+<table id="bookingTable">
+    <thead>
+    <tr>
+        <th>ShowTime ID</th>
+        <th>Date</th>
+        <th>Price</th>
+        <th>Number of Seats</th>
+        <th>Movie Title</th>
+        <th>Location</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    function deleteShowTime() {
+        const id = document.getElementById("ID").value;
+        if (id.trim() !== "") {
+            fetch(`/showtimes/deleteShowTime/${id}`, {
+                method: "DELETE"
+            })
+                .then(response => {
+                    if (response.status === 204) {
+                        alert("ShowTime deleted successfully!");
+                    } else if (response.status === 404) {
+                        alert("ShowTime not found with ID: " + id);
+                    } else {
+                        alert("Failed to delete ShowTime.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while deleting ShowTime.");
+                });
+        } else {
+            alert("Please enter an ID number.");
+        }
+    }
+
+    async function fetchShowtimeData() {
+        try {
+            const response = await fetch("/showtimes/getAllShowTimes");
+            if (response.ok) {
+                const data = await response.json();
+                displayShowtimeData(data);
+            } else {
+                console.error("Error fetching showtime data");
+            }
+        } catch (error) {
+            console.error("Error fetching showtime data:", error);
+        }
+    }
+
+    function displayShowtimeData(data) {
+        const tbody = document.getElementById("bookingTable").querySelector("tbody");
+        tbody.innerHTML = "";
+        data.forEach(showtime => {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${showtime.showTimeID}</td>
+                                 <td>${showtime.date}</td>
+                                 <td>${showtime.price}</td>
+                                 <td>${showtime.numbSeats}</td>
+                                 <td>${showtime.movie.title}</td>
+                                 <td>${showtime.multiplex.location}</td>`;
+            tbody.appendChild(row);
+        });
+    }
+    window.addEventListener('load', () => {
+        fetchShowtimeData();
+    });
+</script>
+</body>
+</html>

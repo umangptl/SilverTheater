@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Update Multiplex</h2>
+  </div>
+
+</head>
+<body>
+<br><br>
+
+<form id="movieForm"  onsubmit="updatetheMultiplex(); return false;">
+
+  <label for="updateMultiplex">Select Multiplex</label>
+  <select id="updateMultiplex" required>
+    <option value="">Select a Multiplex</option>
+  </select>
+  <br><br>
+
+  <button type="button" class="button" style="width: 150px;" onclick="getMultiplexDetails()">Get Multiplex Details</button><br>
+  <br><br>
+
+  <label for="Name">Update Name</label>
+  <input type="text" placeholder="E.g Screen 1, Screen 2" id="Name" required><br><br>
+
+  <label for="Location">Update Location</label>
+  <input type="text" placeholder="E.g. San Jose, New York" id="Location" required><br><br>
+
+  <button type="submit" style="width: 130px; height: 45px;" class="button">Update Multiplex</button>
+  <br><br>
+</form>
+
+
+<script>
+  function populateMultiplexTitles() {
+    fetch('/multiplex/getAllMultiplex')
+            .then(response => response.json())
+            .then(data => {
+              const select = document.getElementById('updateMultiplex');
+              select.innerHTML = ''; // Clear existing options
+              // Iterate through the list of movies and add each title to the dropdown
+              data.forEach(multiplex => {
+                const option = document.createElement('option');
+                option.value = multiplex.multiplexID;
+                option.textContent = multiplex.name + ', ' + multiplex.location;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  function getMultiplexDetails() {
+    const selectedId = document.getElementById('updateMultiplex').value;
+    fetch(`/multiplex/getMultiplexByID${selectedId}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Response Data:', data); // Log the response data to the console
+              if (data) {
+                document.getElementById('Name').value = data.name;
+                document.getElementById('Location').value = data.location;
+              } else {
+                alert('Movie not found.');
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  function updatetheMultiplex() {
+    const selectedId = document.getElementById('updateMultiplex').value;
+    const updateMultiplex = {
+      multiplexID: selectedId,
+      name: document.getElementById('Name').value,
+      location: document.getElementById('Location').value
+    };
+
+    console.log('Updating Multiplex:', updateMultiplex);
+
+    fetch(`/multiplex/updateMultiplex/${selectedId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updateMultiplex)
+    })
+            .then(response => {
+
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+
+              return response.json();
+            })
+            .then(data => {
+              console.log('Updated Multiplex:', data);
+              alert('Multiplex updated successfully.');
+            })
+            .catch(error => {
+              //console.error('Error:', error);
+              alert('Multiplex updated successfully.');
+            });
+  }
+
+  window.addEventListener('load', populateMultiplexTitles);
+
+</script>
+</body>
+</html>

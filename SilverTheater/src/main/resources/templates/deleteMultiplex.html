@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <Title>Admin Management</Title>
+
+  <div class="topnav">
+    <a href="/">
+      <img src="/Images/logo.png" alt="Silver Theatre">
+    </a>
+    <h2>Delete Multiplex</h2>
+  </div>
+
+</head>
+<body>
+<br><br>
+<form id="movieForm">
+
+  <label for="multiplexToDelete">Select Multiplex to Delete</label>
+  <select id="multiplexToDelete">
+    <!-- Multiplex names and IDs will be populated here dynamically -->
+  </select>
+  <br><br>
+  <button type="button" class="button" style="width: 90px; height: 35px; font-size: 15px;" onclick="deleteMultiplex()">Delete</button>
+  <br><br>
+</form>
+
+<script>
+  function deleteMultiplex() {
+    const select = document.getElementById('multiplexToDelete');
+    const selectedId = select.value;
+    const selectedName = select.options[select.selectedIndex].text;
+
+    const confirmation = confirm(`Are you sure you want to delete the multiplex "${selectedName}"?`);
+
+    if (confirmation) {
+      fetch(`/multiplex/deleteMultiplex${selectedId}`, {
+        method: 'DELETE'
+      })
+              .then(response => {
+                if (response.status === 204) {
+                  console.log('Multiplex deleted successfully.');
+                  alert('Multiplex deleted successfully.');
+                  // Refresh the page or update the dropdown after deletion
+                  // You can add the logic here to refresh the dropdown or page
+                } else if (response.status === 404) {
+                  console.error('Multiplex not found.');
+                  alert('Multiplex not found.');
+                } else {
+                  console.error('Error deleting multiplex.');
+                  alert('Error deleting multiplex.');
+                }
+              })
+              .catch(error => console.error('Error:', error));
+    }
+  }
+
+  // Function to populate the dropdown with multiplex names and IDs
+  function populateMultiplexNames() {
+    fetch('/multiplex/getAllMultiplex')
+            .then(response => response.json())
+            .then(data => {
+              const select = document.getElementById('multiplexToDelete');
+              // Iterate through the list of multiplexes and add each name and ID to the dropdown
+              data.forEach(multiplex => {
+                const option = document.createElement('option');
+                option.value = multiplex.multiplexID;
+                option.textContent = `${multiplex.name} (${multiplex.location})`;
+                select.appendChild(option);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+  // Call the function to populate multiplex names and IDs when the page loads
+  window.addEventListener('load', populateMultiplexNames);
+</script>
+</body>
+</html>

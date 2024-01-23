@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="icon" href="/Images/logo.png" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+
+<head>
+  <title>Payment</title>
+</head>
+
+<body>
+<div class="topnav">
+  <a href="/">
+    <img src="/Images/logo.png" alt="Silver Theatre">
+  </a>
+  <h2>Payment Page</h2>
+</div>
+
+<div class="payment_wrapper">
+  <h2>Grand Total: $xx.xx</h2>
+  <div class="error-message" th:if="${param.error}" style="color: red">
+    Invalid credentials
+  </div>
+  <br>
+  <br>
+  <form>
+    <h3 style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;Enter Credit Card Information</h3><br><br>
+    <div><label>Credit Card Number<br><input type="text" name="card_number" placeholder="credit card number"/> </label></div>
+    <div><label>Name on the Card<br><input type="text" name="name_on_card" placeholder="full name"/> </label></div>
+    <div><label>Card Expiry Date<br><input type="text" name="expiry_date" placeholder="MM/YY"/> </label></div>
+    <div><label>CVN<br><input type="password" name="CVN" placeholder="3 or 4 digit"/> </label></div><br><br>
+    <h3 style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;Enter Billing Address</h3><br><br>
+    <div><label>Address Line 1<br><input type="text" name="line_1"/> </label></div>
+    <div><label>Address Line 2<br><input type="text" name="line_2"/> </label></div>
+    <div><label>City<br><input type="text" name="city"/> </label></div>
+    <div><label>State<br><input type="text" name="state"/> </label></div>
+    <div><label>Zipcode<br><input type="text" name="zipcode"/> </label></div>
+
+    <input type="checkbox" id="redeemPoints" name="redeemPoints" value="points">
+    <label for="redeemPoints">Redeem Reward Points (1 pt = $0.1)</label><br>
+
+    <div><input type="submit" value="Pay"/></div>
+  </form> <br>
+  <br>
+</div>
+</body>
+</html>

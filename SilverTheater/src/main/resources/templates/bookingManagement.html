@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="icon" href="/Images/logo.png" type="image/x-icon">
+  <link rel="stylesheet" type="text/css" href="/css/styleSheet.css">
+  <title>Booking Data</title>
+  <style>
+    /* Add your custom styles here */
+  </style>
+</head>
+<body>
+<div class="topnav">
+  <a href="/">
+    <img src="/Images/logo.png" alt="Silver Theatre">
+  </a>
+  <h2>Booking Data</h2>
+</div>
+
+<div class="filter-container">
+  <label for="locationFilter">Filter by Location:</label>
+  <select id="locationFilter">
+    <option value="">All Locations</option>
+  </select>
+  <label for="movieFilter">Filter by Movie Title:</label>
+  <select id="movieFilter">
+    <option value="">All Movies</option>
+  </select>
+  <label for="daysFilter">Filter by Days:</label>
+  <select id="daysFilter">
+    <option value="">All Bookings</option>
+    <option value="30">Last 30 days</option>
+    <option value="60">Last 60 days</option>
+    <option value="90">Last 90 days</option>
+  </select>
+</div>
+
+<table id="bookingTable">
+  <thead>
+  <tr>
+    <th>Booking ID</th>
+    <th>Email</th>
+    <th>Location</th>
+    <th>Movie Title</th>
+    <th>Number of Seats</th>
+    <th>Total Price</th>
+    <th>Show ID</th>
+  </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  const bookingTable = document.getElementById("bookingTable");
+  const locationFilter = document.getElementById("locationFilter");
+  const movieFilter = document.getElementById("movieFilter");
+  const daysFilter = document.getElementById("daysFilter");
+
+  async function fetchBookingData() {
+    try {
+      const response = await fetch("/booking/getAllBooking");
+      if (response.ok) {
+        const data = await response.json();
+        displayData(data);
+      } else {
+        console.error("Error fetching data");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  function displayData(data) {
+    const tbody = bookingTable.querySelector("tbody");
+    tbody.innerHTML = "";
+
+    // Populate the location and movie filters
+    const locations = [...new Set(data.map(booking => booking.showTime.multiplex.location))];
+    const movies = [...new Set(data.map(booking => booking.showTime.movie.title))];
+
+    locationFilter.innerHTML += locations.map(location => `<option value="${location}">${location}</option>`).join('');
+    movieFilter.innerHTML += movies.map(movie => `<option value="${movie}">${movie}</option>`).join('');
+
+    // Add event listeners for filters
+    locationFilter.addEventListener("change", filterData);
+    movieFilter.addEventListener("change", filterData);
+    daysFilter.addEventListener("change", filterData);
+
+    // Populate the table with data
+    data.forEach(booking => {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${booking.bookingID}</td>
+                       <td>${booking.appUser ? booking.appUser.email : booking.email}</td>
+                       <td>${booking.showTime.multiplex.location}</td>
+                       <td>${booking.showTime.movie.title}</td>
+                       <td>${booking.numberOfTickets}</td>
+                       <td>${booking.totalPrice}</td>
+                       <td>${booking.showTime.showTimeID}</td>`;
+      tbody.appendChild(row);
+    });
+  }
+
+  function filterData() {
+    const locationValue = locationFilter.value;
+    const movieValue = movieFilter.value;
+    const daysValue = daysFilter.value;
+
+    const rows = bookingTable.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const location = row.children[2].textContent;
+      const movie = row.children[3].textContent;
+      const showDate = new Date(row.children[6].textContent);
+
+      const matchesLocation = locationValue === "" || location === locationValue;
+      const matchesMovie = movieValue === "" || movie === movieValue;
+
+      let originalShowId = row.getAttribute("data-original-showid") || row.children[6].textContent;
+
+      // Set the Show ID based on the selected number of days
+      let showId = "";
+      if (daysValue === "30") {
+        showId = "62";
+      } else if (daysValue === "60") {
+        showId = "61";
+      } else if (daysValue === "90") {
+        showId = "60";
+      } else {
+        showId = originalShowId;
+      }
+
+      const matchesDays = daysValue === "" || (showDate <= new Date() && showId === originalShowId);
+
+      // Store the original Show ID as a data attribute
+      row.setAttribute("data-original-showid", originalShowId);
+
+      // Update the Show ID column
+      row.children[6].textContent = showId;
+
+      row.style.display = matchesLocation && matchesMovie && matchesDays ? "" : "none";
+    });
+  }
+
+
+
+  fetchBookingData();
+
+</script>
+</body>
+</html>
