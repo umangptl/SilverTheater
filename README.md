@@ -1,5 +1,13 @@
 ## Silver Theater
- 
+SilverTheater is a comprehensive ticket booking system designed to streamline the process of reserving seats for movies. This application features both user and admin functionalities, including browsing movies, booking tickets, managing screenings, and overseeing user accounts.
+
+**Contributors:** [@umangptl](https://github.com/umangptl) [@sahaj-totla](https://github.com/sahaj-totla) [@jeportillo1](https://github.com/jeportillo1)
+
+### Tech Stack
+- Frontend: HTML, CSS
+- Backend: Java, Spring Boot
+- DevOps: CI/CD
+- Cloud: AWS
 
 ### Class Diagram
 <img src="https://github.com/umangptl/SilverTheater/blob/main/Pictures/Class-Diagram.png" alt="Class-Diagram" width="500" height="380">
